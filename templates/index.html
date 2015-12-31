@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load filters %}
+
+{% block site_title %}
+	{{ site_title }}
+{% endblock %}
+
+{% block page_title %}
+	{{ page_title }}
+{% endblock %}
+
+
+{% block page_body %}
+	{% if page_body %}
+		{{ page_body }}
+	{% elif not request.path|slash %}
+			Welcome to spark, a free valid CSS3 &amp; HTML5 responsive web template from <a href="http://zypopwebtemplates.com/" title="ZyPOP">ZyPOP</a>. This template is completely <strong>free</strong> to use permitting a link remains back to  <a href="http://zypopwebtemplates.com/" title="ZyPOP">http://zypopwebtemplates.com/</a>
+			
+			
+			<ul>
+			{% for book in books %}
+				<li>
+					<img src="{{book.img.url}}"/><br/><i>{{ book.title }}</i>
+				</li>
+			{% endfor %}
+			</ul>
+	{% elif 'contact' in request.path %}
+		{% if request.session.upload_file %}
+			<div>{{request.session.upload_file }}</div>
+		{%else%}
+			<form acion="" method="post" enctype="multipart/form-data">{% csrf_token %}
+			
+				{% for field in contacts %}
+					<div class="fieldWrapper">
+						{{ field.errors.as_text }}  
+
+						{{ field.label_tag }} {{ field }}
+					</div>
+				{% endfor %}
+				<input type="submit" value="Send" class="cursor"/>
+				
+			</form>
+		{%endif%}
+	{% endif %}
+{% endblock %}
+
+{% block menu %}
+	{% for li in menu %}
+		<li>{{ li.name }}</li>
+	{% empty %}
+		Sorry no toppings here
+	{% endfor %}
+{% endblock %}
+
+{% block nav %}
+	<li {% if not request.path|slash %} {{ 'class="selected"' }} {% endif %}>
+		<a href="{% url 'index' %}">Home</a>
+	</li>
+	{% for li in nav %}
+		<li {% if li.name in request.path %}{{ 'class="selected"' }} {% endif %}>
+			<a href="{% url 'pages' li.name %}">{{ li.name }}</a>
+		</li>
+	{% empty %}
+		Sorry no pizza here
+	{% endfor %}
+	<li {% if 'contact' in request.path %} {{ 'class="selected"' }} {% endif %}>
+		<a href="{% url 'pages' 'contact' %}">Contact</a>
+	</li>
+{% endblock %}
